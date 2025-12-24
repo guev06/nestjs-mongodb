@@ -7,11 +7,12 @@ import {
   Param,
   Patch,
   UsePipes,
+  Delete,
   //UsePipes,
   //ValidationPipe,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { CreateUserDto } from './dto/user.dto';
+import { CreateUserDto } from './dto/createUserSettings.dto';
 import mongoose from 'mongoose';
 import { ValidationPipe } from '@nestjs/common';
 import { updateUserDto } from './dto/updateUser.dto';
@@ -55,5 +56,19 @@ export class UsersController {
     const updatedUser = await this.usersService.updateUser(id, updateUserDto);
     if (!updatedUser) throw new HttpException('User not found (╬▔皿▔)╯', 404);
     return updatedUser;
+  }
+
+  @Delete(':id')
+  async deleteUser(@Param('id') id: string) {
+    const isValid = mongoose.Types.ObjectId.isValid(id);
+    if (!isValid)
+      throw new HttpException(
+        'User cannot be deleted due to invalid id >:(',
+        400,
+      );
+    const deletedUser = await this.usersService.deleteUser(id);
+    if (!deletedUser)
+      throw new HttpException('user id is valid but not found', 404);
+    return;
   }
 }
